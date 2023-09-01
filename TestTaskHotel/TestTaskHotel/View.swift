@@ -16,8 +16,8 @@ struct ContentView: View {
             List(appViewModel.hotels) { hotel in
                 HotelView(appViewModel: appViewModel, hotel: hotel)
             }
+            .navigationTitle("Отель")
         }
-        .navigationTitle("Hostels")
         .onAppear {
             appViewModel.getHotels()
         }
@@ -31,6 +31,7 @@ struct HotelView: View {
     var hotel: Hotel
     
     @State var address = ""
+    @State var openHotel = false
     
     var body: some View {
         VStack {
@@ -39,20 +40,58 @@ struct HotelView: View {
                 .aspectRatio(contentMode: .fill)
                 .clipped()
                 .padding()
-            VStack(alignment: .leading) {
-                Text(hotel.name)
-                    .mainFont(size: 22)
-                Text(address)
-                    .mainFont(size: 14)
-                    .padding()
-                    .foregroundStyle(.blue)
-                Text("от \(hotel.price.description) ₽")
-                    .mainFont(size: 30)
-                Text("за тур с перелётом")
-                    .font(Font.custom("SF Pro Display", size: 14))
-                    .foregroundColor(Color(red: 0.51, green: 0.53, blue: 0.59))
+            VStack {
+                VStack {
+                    Text(hotel.name)
+                        .font(.title)
+                        .bold()
+                    Text(address)
+                        .foregroundStyle(.blue)
+                }
+                .padding(.bottom)
+                HStack {
+                    Text("от \(hotel.price.description) ₽")
+                        .font(.title)
+                    Text("за тур с перелётом")
+                        .foregroundColor(.gray)
+                }
                 
             }
+            .padding()
+             
+            Rectangle()
+                .frame(width: .infinity, height: 2)
+                .background(.gray)
+            VStack {
+                Text("Об отеле")
+                    .font(.title)
+            }
+            .padding()
+            
+            HStack {
+                ForEach(hotel.preferences, id: \.self) { preference in
+                    Text(preference)
+                        .lineLimit(1)
+                        .foregroundColor(Color(red: 0.51, green: 0.53, blue: 0.59))
+                }
+                .padding()
+                .background(Color(red: 0.98, green: 0.98, blue: 0.99))
+                .cornerRadius(5)
+            }
+            .padding()
+            
+            Text(hotel.info)
+                .padding()
+
+            Button(action: {
+                openHotel = true
+            }, label: {
+                Text("К выбору номера")
+                    .padding()
+                    .background(.blue)
+                    .foregroundStyle(.white)
+                    .clipShape(Capsule())
+            })
             .padding()
         }
         .onAppear {
@@ -60,6 +99,23 @@ struct HotelView: View {
         }
         .refreshable {
             loadAdress()
+        }
+        .fullScreenCover(isPresented: $openHotel) {
+            NavigationStack {
+                List(hotel.rooms) { room in
+                    RoomView(room: room)
+                }
+                .toolbar {
+                    ToolbarItem(placement: .navigation) {
+                        Button(action: {
+                            openHotel = false
+                        }, label: {
+                            Image(systemName: "chevron.left")
+                                .foregroundStyle(.black)
+                        })
+                    }
+                }
+            }
         }
     }
     
@@ -73,8 +129,12 @@ struct HotelView: View {
 struct RoomView: View {
     var room: Room
     
+    
+    
     var body: some View {
-        Text(room.name)
+        VStack {
+            Text(room.name)
+        }
     }
 }
 
