@@ -39,7 +39,7 @@ class MockData: Repository {
             rooms: [
                 Room(id: UUID(),
                      name: "Стандартный с видом на бассейн или сад",
-                     price: 186600,
+                     price: 18660,
                      preferences: [
                         "Все включено",
                         "Кондиционер"

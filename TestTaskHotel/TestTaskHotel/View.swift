@@ -35,11 +35,17 @@ struct HotelView: View {
     
     var body: some View {
         VStack {
-            Image("1")
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .clipped()
-                .padding()
+            Rectangle()
+                .foregroundColor(.clear)
+                .frame(width: 300, height: 240)
+                .background(
+                    Image("1")
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: 300, height: 240)
+                        .clipped()
+                    )
+                .cornerRadius(15)
             VStack {
                 VStack {
                     Text(hotel.name)
@@ -128,16 +134,60 @@ struct HotelView: View {
 
 struct RoomView: View {
     var room: Room
-    
-    
+    @State var openRoom = false
     
     var body: some View {
         VStack {
+            Rectangle()
+                .foregroundColor(.clear)
+                .frame(width: 300, height: 240)
+                .background(
+                    Image("2")
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: 300, height: 240)
+                        .clipped()
+                    )
+                .cornerRadius(15)
             Text(room.name)
+                .font(.title)
+                .bold()
+            HStack {
+                ForEach(room.preferences, id: \.self) { preference in
+                    Text(preference)
+                        .lineLimit(1)
+                        .foregroundColor(Color(red: 0.51, green: 0.53, blue: 0.59))
+                }
+                .padding()
+                .background(Color(red: 0.98, green: 0.98, blue: 0.99))
+                .cornerRadius(5)
+            }
+            HStack {
+                Text("от \(room.price.description) ₽")
+                    .font(.title)
+                Text("за 7 ночей с перелётом")
+                    .foregroundColor(.gray)
+            }
+            Button(action: {
+                openRoom = true
+            }, label: {
+                Text("Выбрать номер")
+                    .padding()
+                    .background(.blue)
+                    .foregroundStyle(.white)
+                    .clipShape(Capsule())
+            })
+            .padding()
+        }
+        .fullScreenCover(isPresented: $openRoom) {
+            
         }
     }
 }
 
 #Preview("Main") {
     ContentView(appViewModel: AppViewModel(repository: MockData()))
+}
+#Preview("Room") {
+    RoomView(room: Room(id: UUID(), name: "asfas", price: 1241, preferences: ["asf", "adf"], info: "asdfasfasfasdvasvas"))
 }
